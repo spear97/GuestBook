@@ -1,36 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Set character encoding to UTF-8 -->
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
     <meta charset="utf-8">
+    <!-- Responsive viewport settings -->
     <meta content="width=device-width" name="viewport">
+    <!-- Link to external stylesheet -->
     <link href="style.css" rel="stylesheet">
+    <!-- Title of the page -->
     <title>Guestbook - v2</title>
   </head>
   <body>
+    <!-- Header section with Guestbook title -->
     <div id="header">
       <h1>Guestbook - v2</h1>
     </div>
 
+    <!-- Section for guestbook entries -->
     <div id="guestbook-entries">
+      <!-- Link to emoji CSS stylesheet -->
       <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+      <!-- Placeholder text while waiting for database connection -->
       <p>Waiting for database connection... <i class='em em-boat'></i></p>
-      
     </div>
 
+    <!-- Form for submitting new guestbook entries -->
     <div>
       <form id="guestbook-form">
+        <!-- Text input for guestbook entry -->
         <input autocomplete="off" id="guestbook-entry-content" type="text">
+        <!-- Submit button -->
         <a href="#" id="guestbook-submit">Submit</a>
       </form>
     </div>
 
+    <!-- Additional information section -->
     <div>
+      <!-- Placeholder for displaying host address -->
       <p><h2 id="guestbook-host-address"></h2></p>
+      <!-- Links to additional endpoints -->
       <p><a href="env">/env</a>
       <a href="info">/info</a></p>
     </div>
+
+    <!-- Scripts for functionality -->
+    <!-- Include jQuery library -->
     <script src="jquery.min.js"></script>
+    <!-- Custom JavaScript for guestbook functionality -->
     <script src="script.js"></script>
   </body>
 </html>
