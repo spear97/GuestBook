@@ -27,19 +27,19 @@ import (
 	"github.com/xyproto/simpleredis/v2"
 )
 
+// Global variables for Redis connections and in-memory storage
 var (
-	// For when Redis is used
-	masterPool *simpleredis.ConnectionPool
-	slavePool  *simpleredis.ConnectionPool
-
-	// For when Redis is not used, we just keep it in memory
-	lists map[string][]string = map[string][]string{}
+	masterPool *simpleredis.ConnectionPool // For when Redis is used as master
+	slavePool  *simpleredis.ConnectionPool // For when Redis is used as slave
+	lists      map[string][]string        // For in-memory storage
 )
 
+// Input struct for JSON parsing
 type Input struct {
 	InputText string `json:"input_text"`
 }
 
+// GetList retrieves a list by key
 func GetList(key string) ([]string, error) {
 	// Using Redis
 	if slavePool != nil {
@@ -47,20 +47,20 @@ func GetList(key string) ([]string, error) {
 		if result, err := list.GetAll(); err == nil {
 			return result, err
 		}
-		// if we can't talk to the slave then assume its not running yet
-		// so just try to use the master instead
+		// If we can't talk to the slave, try to use the master instead
 	}
 
-	// if the slave doesn't exist, read from the master
+	// If the slave doesn't exist, read from the master
 	if masterPool != nil {
 		list := simpleredis.NewList(masterPool, key)
 		return list.GetAll()
 	}
 
-	// if neither exist, we're probably in "in-memory" mode
+	// If neither Redis instance exists, use in-memory storage
 	return lists[key], nil
 }
 
+// AppendToList appends an item to a list by key
 func AppendToList(item string, key string) ([]string, error) {
 	var err error
 	items := []string{}
@@ -74,6 +74,7 @@ func AppendToList(item string, key string) ([]string, error) {
 			return nil, err
 		}
 	} else {
+		// If Redis is not used, append to in-memory storage
 		items = lists[key]
 		items = append(items, item)
 		lists[key] = items
@@ -81,6 +82,7 @@ func AppendToList(item string, key string) ([]string, error) {
 	return items, nil
 }
 
+// ListRangeHandler handles GET requests to retrieve a list by key
 func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
 	var data []byte
 
@@ -89,13 +91,14 @@ func ListRangeHandler(rw http.ResponseWriter, req *http.Request) {
 		data = []byte("Error getting list: " + err.Error() + "\n")
 	} else {
 		if data, err = json.MarshalIndent(items, "", ""); err != nil {
-			data = []byte("Error marhsalling list: " + err.Error() + "\n")
+			data = []byte("Error marshalling list: " + err.Error() + "\n")
 		}
 	}
 
 	rw.Write(data)
 }
 
+// ListPushHandler handles GET requests to push an item to a list
 func ListPushHandler(rw http.ResponseWriter, req *http.Request) {
 	var data []byte
 
@@ -115,6 +118,7 @@ func ListPushHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Write(data)
 }
 
+// InfoHandler handles GET requests to retrieve info about the database
 func InfoHandler(rw http.ResponseWriter, req *http.Request) {
 	info := ""
 
@@ -132,6 +136,7 @@ func InfoHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte(info + "\n"))
 }
 
+// EnvHandler handles GET requests to retrieve environment variables
 func EnvHandler(rw http.ResponseWriter, req *http.Request) {
 	environment := make(map[string]string)
 	for _, item := range os.Environ() {
@@ -149,6 +154,7 @@ func EnvHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Write(data)
 }
 
+// HelloHandler handles GET requests to provide a simple greeting
 func HelloHandler(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte("Hello from guestbook. " +
 		"Your app is up! (Hostname: " +
@@ -156,7 +162,7 @@ func HelloHandler(rw http.ResponseWriter, req *http.Request) {
 		")\n"))
 }
 
-// Support multiple URL schemes for different use cases
+// findRedisURL determines the Redis URL based on environment variables
 func findRedisURL() string {
 	host := os.Getenv("REDIS_MASTER_SERVICE_HOST")
 	port := os.Getenv("REDIS_MASTER_SERVICE_PORT")
@@ -188,6 +194,7 @@ func main() {
 	r.Path("/env").Methods("GET").HandlerFunc(EnvHandler)
 	r.Path("/hello").Methods("GET").HandlerFunc(HelloHandler)
 
+	// Use negroni for middleware and router management
 	n := negroni.Classic()
 	n.UseHandler(r)
 	n.Run(":3000")
