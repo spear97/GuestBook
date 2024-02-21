@@ -1,36 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Set character encoding -->
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <!-- Specify character encoding for modern browsers -->
     <meta charset="utf-8">
+    <!-- Responsive design viewport -->
     <meta content="width=device-width" name="viewport">
+    <!-- Link to external stylesheet -->
     <link href="style.css" rel="stylesheet">
+    <!-- Title of the webpage -->
     <title>Sean's Guestbook - v2</title>
   </head>
   <body>
+    <!-- Header section -->
     <div id="header">
       <h1>Guestbook - v2</h1>
     </div>
 
+    <!-- Guestbook entries section -->
     <div id="guestbook-entries">
+      <!-- Link to emoji CSS -->
       <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+      <!-- Placeholder for database connection status -->
       <p>Waiting for database connection... <i class='em em-boat'></i></p>
-      
     </div>
 
+    <!-- Guestbook form section -->
     <div>
+      <!-- Form for submitting guestbook entry -->
       <form id="guestbook-form">
+        <!-- Input field for guestbook entry content -->
         <input autocomplete="off" id="guestbook-entry-content" type="text">
+        <!-- Submit button -->
         <a href="#" id="guestbook-submit">Submit</a>
       </form>
     </div>
 
+    <!-- Additional links section -->
     <div>
+      <!-- Host address display -->
       <p><h2 id="guestbook-host-address"></h2></p>
+      <!-- Additional links -->
       <p><a href="env">/env</a>
       <a href="info">/info</a></p>
     </div>
+    
+    <!-- JavaScript libraries -->
     <script src="jquery.min.js"></script>
+    <!-- Custom JavaScript for the page -->
     <script src="script.js"></script>
   </body>
 </html>
